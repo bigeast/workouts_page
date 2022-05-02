@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
-Sitemap: https://ben29.xyz/sitemap/sitemap-index.xml
-Host: https://ben29.xyz
+Sitemap: https://bigeast.github.io/sitemap/sitemap-index.xml
+Host: https://bigeast.github.io
