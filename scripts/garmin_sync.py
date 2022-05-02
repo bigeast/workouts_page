@@ -51,13 +51,8 @@ GARMIN_CN_URL_DICT = {
     "ACTIVITY_URL": "https://connect.garmin.cn/proxy/activity-service/activity/{activity_id}",
 }
 
-# set to True if you want to sync all time activities
-# default only sync last 20
-GET_ALL = False
-
-
 class Garmin:
-    def __init__(self, email, password, auth_domain, is_only_running=False):
+    def __init__(self, email, password, auth_domain, is_only_running=False, sync_type='recent', activity_types=['running']):
         """
         Init module
         """
@@ -77,6 +72,8 @@ class Garmin:
             "origin": self.URL_DICT.get("SSO_URL_ORIGIN"),
         }
         self.is_only_running = is_only_running
+        self.sync_type = sync_type
+        self.activity_types = activity_types
         self.upload_url = self.URL_DICT.get("UPLOAD_URL")
         self.activity_url = self.URL_DICT.get("ACTIVITY_URL")
         self.is_login = False
@@ -180,7 +177,8 @@ class Garmin:
         url = f"{self.modern_url}/proxy/activitylist-service/activities/search/activities?start={start}&limit={limit}"
         if self.is_only_running:
             url = url + "&activityType=running"
-        return await self.fetch_data(url)
+        activities = await self.fetch_data(url)
+        return [x for x in activities if x['activityType']['typeKey'] in self.activity_types]
 
     async def download_activity(self, activity_id):
         url = f"{self.modern_url}/proxy/download-service/export/gpx/activity/{activity_id}"
@@ -269,7 +267,8 @@ async def download_garmin_gpx(client, activity_id):
 
 
 async def get_activity_id_list(client, start=0):
-    if GET_ALL:
+
+    if client.sync_type == 'recent':
         activities = await client.get_activities(start, 100)
         if len(activities) > 0:
             ids = list(map(lambda a: str(a.get("activityId", "")), activities))
@@ -313,12 +312,29 @@ if __name__ == "__main__":
         action="store_true",
         help="if is only for running",
     )
+    parser.add_argument(
+        "--sync-type",
+        dest="sync_type",
+        help="if sync for all records",
+    )
+    parser.add_argument(
+        "--activity-types",
+        dest="activity_types",
+        help="walking hiking running cycling",
+        nargs="+",
+        choices=["walking", "hiking", "running", "cycling"],
+    )
     options = parser.parse_args()
     email = options.email or config("sync", "garmin", "email")
     password = options.password or config("sync", "garmin", "password")
     auth_domain = (
         "CN" if options.is_cn else config("sync", "garmin", "authentication_domain")
     )
+
+    # all: sync all time activities, recent: recent 20 activities
+    sync_type = options.sync_type or config("sync", "garmin", "sync-type") or "recent"
+    activity_types = options.activity_types or config("sync", "garmin","activity-types") or "running"
+    print("debug: ", sync_type, activity_types)
     is_only_running = options.only_run
     if email == None or password == None:
         print("Missing argument nor valid configuration file")
@@ -329,7 +345,7 @@ if __name__ == "__main__":
         os.mkdir(GPX_FOLDER)
 
     async def download_new_activities():
-        client = Garmin(email, password, auth_domain, is_only_running)
+        client = Garmin(email, password, auth_domain, is_only_running, sync_type, activity_types)
         client.login()
 
         # because I don't find a para for after time, so I use garmin-id as filename

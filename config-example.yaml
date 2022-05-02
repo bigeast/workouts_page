@@ -5,3 +5,6 @@ sync:
     authentication_domain: CN #  Global (default) | CN (Mainland China)
     email: user@email.com
     password: yourpassword
+    sync-type: recent # all | recent
+    activity-types: # walking | hiking | running | cycling, TODO: swimming, other
+      - running

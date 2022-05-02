@@ -27,6 +27,9 @@ env:
   GITHUB_NAME: bigeast
   GITHUB_EMAIL: dadongking@gmail.com
 
+  GARMIN_SYNC_TYPE: all # [all, recent(20d)]
+  GARMIN_ACTIVITY_TYPES: walking hiking running cycling # choice from [walking, hiking, running, cycling]
+
 jobs:
   sync:
     name: Sync
@@ -80,14 +83,14 @@ jobs:
       - name: Run sync Garmin script
         if: env.RUN_TYPE == 'garmin'
         run: |
-          python scripts/garmin_sync.py ${{ secrets.GRAMIN_EMAIL }} ${{ secrets.GARMIN_PASSWORD }}
+          python scripts/garmin_sync.py ${{ secrets.GRAMIN_EMAIL }} ${{ secrets.GARMIN_PASSWORD }} --sync-type ${{env.GARMIN_SYNC_TYPE}} --activity-types ${{ env.GARMIN_ACTIVITY_TYPES }}
         # If you only want to sync `type running` add args --only-run, default script is to sync all data (rides and runs).
         # python scripts/garmin_sync.py ${{ secrets.GRAMIN_EMAIL }} ${{ secrets.GARMIN_PASSWORD }} --only-run
 
       - name: Run sync Garmin CN script
         if: env.RUN_TYPE == 'garmin_cn'
         run: |
-          python scripts/garmin_sync.py ${{ secrets.GRAMIN_CN_EMAIL }} ${{ secrets.GARMIN_CN_PASSWORD }} --is-cn
+          python scripts/garmin_sync.py ${{ secrets.GRAMIN_CN_EMAIL }} ${{ secrets.GARMIN_CN_PASSWORD }} --is-cn --sync-type ${{env.GARMIN_SYNC_TYPE}} --activity-types ${{ env.GARMIN_ACTIVITY_TYPES }}
 
       - name: Run sync Only GPX script
         if: env.RUN_TYPE == 'only_gpx'
