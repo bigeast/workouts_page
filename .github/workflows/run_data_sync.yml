@@ -3,7 +3,7 @@ name: Run Data Sync
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 6,12,22 * * *"
   push:
     branches:
       - master
@@ -28,7 +28,7 @@ env:
   GITHUB_EMAIL: dadongking@gmail.com
 
   GARMIN_SYNC_TYPE: all # [all, recent(20d)]
-  GARMIN_ACTIVITY_TYPES: walking hiking running cycling # choice from [walking, hiking, running, cycling]
+  GARMIN_ACTIVITY_TYPES: walking hiking running trail_running street_running mountaineering cycling open_water_swimming # choice from [walking, hiking, running, cycling]
 
 jobs:
   sync:

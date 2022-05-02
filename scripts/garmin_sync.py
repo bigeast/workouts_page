@@ -331,9 +331,23 @@ if __name__ == "__main__":
     parser.add_argument(
         "--activity-types",
         dest="activity_types",
-        help="walking hiking running cycling",
+        help="from activityType.typeKey",
         nargs="+",
-        choices=["walking", "hiking", "running", "cycling"],
+        choices=[
+            "lap_swimming",
+            "running",
+            "hiking",
+            "cycling",
+            "street_running",
+            "walking",
+            "mountaineering",
+            "indoor_cardio",
+            "road_biking",
+            "trail_running",
+            "hiit",
+            "boating",
+            "open_water_swimming",
+        ],
     )
     options = parser.parse_args()
     email = options.email or config("sync", "garmin", "email")
@@ -372,7 +386,9 @@ if __name__ == "__main__":
         ]
         logger.debug("downloaded ids: ", downloaded_ids)
         activity_ids = await get_activity_id_list(client)
+        logger.debug("activity ids: ", downloaded_ids)
         to_generate_garmin_ids = list(set(activity_ids) - set(downloaded_ids))
+        logger.debug("new ids: ", to_generate_garmin_ids)
         print(f"{len(to_generate_garmin_ids)} new activities to be downloaded")
 
         start_time = time.time()
