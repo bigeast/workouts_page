@@ -51,8 +51,17 @@ GARMIN_CN_URL_DICT = {
     "ACTIVITY_URL": "https://connect.garmin.cn/proxy/activity-service/activity/{activity_id}",
 }
 
+
 class Garmin:
-    def __init__(self, email, password, auth_domain, is_only_running=False, sync_type='recent', activity_types=['running']):
+    def __init__(
+        self,
+        email,
+        password,
+        auth_domain,
+        is_only_running=False,
+        sync_type="recent",
+        activity_types=["running"],
+    ):
         """
         Init module
         """
@@ -178,7 +187,9 @@ class Garmin:
         if self.is_only_running:
             url = url + "&activityType=running"
         activities = await self.fetch_data(url)
-        return [x for x in activities if x['activityType']['typeKey'] in self.activity_types]
+        return [
+            x for x in activities if x["activityType"]["typeKey"] in self.activity_types
+        ]
 
     async def download_activity(self, activity_id):
         url = f"{self.modern_url}/proxy/download-service/export/gpx/activity/{activity_id}"
@@ -268,7 +279,7 @@ async def download_garmin_gpx(client, activity_id):
 
 async def get_activity_id_list(client, start=0):
 
-    if client.sync_type == 'recent':
+    if client.sync_type == "recent":
         activities = await client.get_activities(start, 100)
         if len(activities) > 0:
             ids = list(map(lambda a: str(a.get("activityId", "")), activities))
@@ -333,7 +344,11 @@ if __name__ == "__main__":
 
     # all: sync all time activities, recent: recent 20 activities
     sync_type = options.sync_type or config("sync", "garmin", "sync-type") or "recent"
-    activity_types = options.activity_types or config("sync", "garmin","activity-types") or "running"
+    activity_types = (
+        options.activity_types
+        or config("sync", "garmin", "activity-types")
+        or "running"
+    )
     print("debug: ", sync_type, activity_types)
     is_only_running = options.only_run
     if email == None or password == None:
@@ -345,7 +360,9 @@ if __name__ == "__main__":
         os.mkdir(GPX_FOLDER)
 
     async def download_new_activities():
-        client = Garmin(email, password, auth_domain, is_only_running, sync_type, activity_types)
+        client = Garmin(
+            email, password, auth_domain, is_only_running, sync_type, activity_types
+        )
         client.login()
 
         # because I don't find a para for after time, so I use garmin-id as filename
