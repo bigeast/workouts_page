@@ -279,7 +279,7 @@ async def download_garmin_gpx(client, activity_id):
 
 async def get_activity_id_list(client, start=0):
 
-    if client.sync_type == "recent":
+    if client.sync_type == "all":
         activities = await client.get_activities(start, 100)
         if len(activities) > 0:
             ids = list(map(lambda a: str(a.get("activityId", "")), activities))
@@ -349,7 +349,7 @@ if __name__ == "__main__":
         or config("sync", "garmin", "activity-types")
         or "running"
     )
-    print("debug: ", sync_type, activity_types)
+    logger.debug("sync_type, activity_types: ", sync_type, activity_types)
     is_only_running = options.only_run
     if email == None or password == None:
         print("Missing argument nor valid configuration file")
@@ -370,6 +370,7 @@ if __name__ == "__main__":
         downloaded_ids = [
             i.split(".")[0] for i in os.listdir(GPX_FOLDER) if not i.startswith(".")
         ]
+        logger.debug("downloaded ids: ", downloaded_ids)
         activity_ids = await get_activity_id_list(client)
         to_generate_garmin_ids = list(set(activity_ids) - set(downloaded_ids))
         print(f"{len(to_generate_garmin_ids)} new activities to be downloaded")
