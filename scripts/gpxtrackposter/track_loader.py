@@ -27,6 +27,7 @@ log = logging.getLogger(__name__)
 def load_gpx_file(file_name):
     """Load an individual GPX file as a track by using Track.load_gpx()"""
     t = Track()
+    print(f"loading... {file_name}")
     t.load_gpx(file_name)
     return t
 
@@ -76,8 +77,8 @@ class TrackLoader:
     def load_tracks(self, base_dir):
         """Load tracks base_dir and return as a List of tracks"""
         file_names = [x for x in self._list_gpx_files(base_dir)]
+        print(f"GPX files: {len(file_names)}")
         log.info(f"GPX files: {len(file_names)}")
-        print(len(file_names))
 
         tracks = []
 
@@ -158,7 +159,7 @@ class TrackLoader:
                 merged_tracks.append(t)
             else:
                 dt = (t.start_time_local - last_end_time).total_seconds()
-                if 0 < dt < 3600:
+                if 0 < dt < 600:
                     merged_tracks[-1].append(t)
                 else:
                     merged_tracks.append(t)
