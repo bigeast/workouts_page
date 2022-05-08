@@ -25,22 +25,31 @@ TYPE_DICT = {
     "running": "Run",
     "RUN": "Run",
     "Run": "Run",
+    "street_running": "Run",
+    "trail_running": "TrailRun",
     "cycling": "Ride",
     "CYCLING": "Ride",
+    "road_biking": "Ride",
     "Ride": "Ride",
     "VirtualRide": "VirtualRide",
-    "indoor_cycling": "Indoor Ride",
-    "walking": "Hike",
+    "indoor_cycling": "IndoorRide",
+    "indoor_cardio": "HIIT",
+    "hiit": "HIIT",
+    "walking": "Walk",
+    "Walk": "Walk",
     "hiking": "Hike",
-    "Walk": "Hike",
     "Hike": "Hike",
+    "mountaineering": "Climb",
     "Swim": "Swim",
+    "lap_swimming": "Swim",
+    "open_water_swimming": "Swim",
     "rowing": "Rowing",
+    "boating": "Rowing",
     "RoadTrip": "RoadTrip",
     "flight": "Flight",
 }
 
-MAPPING_TYPE = ["Hike", "Ride", "VirtualRide", "Rowing", "Run", "Swim", "RoadTrip"]
+MAPPING_TYPE = ["Run", "TrailRun", "Ride", "HIIT", "Walk", "Hike", "Climb", "Swim", "Rowing"]
 
 
 try:

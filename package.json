@@ -52,9 +52,10 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "data:clean": "rm scripts/data.db GPX_OUT/* activities/* src/static/activities.json",
+    "data:clean": "rm scripts/data.db src/static/activities.json",
     "data:download:garmin": "python3 scripts/garmin_sync.py",
-    "data:analysis": "python3 scripts/gen_svg.py --from-db --type github --output assets/github.svg",
+    "data:github": "python3 scripts/gen_svg.py --from-db --title Workouts --type github --athlete bigeast --special-distance 10 --special-distance2 20 --special-color yellow --special-color2 red --output assets/github.svg --use-localtime --min-distance 0.5",
+    "data:grid": "python3 scripts/gen_svg.py --from-db --title 'Over 10km workouts' --type grid --athlete bigeast  --output assets/grid.svg --min-distance 10.0 --special-color yellow --special-color2 red --special-distance 15 --special-distance2 50 --use-localtime",
     "build": "gatsby build",
     "develop": "gatsby develop",
     "serve": "gatsby serve",

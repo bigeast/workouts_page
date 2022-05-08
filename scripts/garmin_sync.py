@@ -14,6 +14,8 @@ import re
 import sys
 import time
 import traceback
+import zipfile
+from io import BytesIO
 
 import aiofiles
 import cloudscraper
@@ -22,7 +24,7 @@ from config import GPX_FOLDER, JSON_FILE, SQL_FILE, config
 
 from utils import make_activities_file_only
 
-# logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
@@ -59,6 +61,7 @@ class Garmin:
         password,
         auth_domain,
         is_only_running=False,
+        file_type="gpx",
         sync_type="recent",
         activity_types=["running"],
     ):
@@ -81,6 +84,7 @@ class Garmin:
             "origin": self.URL_DICT.get("SSO_URL_ORIGIN"),
         }
         self.is_only_running = is_only_running
+        self.file_type = file_type
         self.sync_type = sync_type
         self.activity_types = activity_types
         self.upload_url = self.URL_DICT.get("UPLOAD_URL")
@@ -187,12 +191,21 @@ class Garmin:
         if self.is_only_running:
             url = url + "&activityType=running"
         activities = await self.fetch_data(url)
-        return [
-            x for x in activities if x["activityType"]["typeKey"] in self.activity_types
-        ]
+        print("activities_types: ", self.activity_types)
+        if len(self.activity_types) == 0 or self.activity_types[0] == "":
+            return activities
+        else:
+            return [
+                x
+                for x in activities
+                if x["activityType"]["typeKey"] in self.activity_types
+            ]
 
     async def download_activity(self, activity_id):
-        url = f"{self.modern_url}/proxy/download-service/export/gpx/activity/{activity_id}"
+        if self.file_type == "fit":
+            url = f"{self.modern_url}/modern/proxy/download-service/files/activity/{activity_id}"
+        else:
+            url = f"{self.modern_url}/proxy/download-service/export/{self.file_type}/activity/{activity_id}"
         logger.info(f"Download activity from {url}")
         response = await self.req.get(url, headers=self.headers)
         response.raise_for_status()
@@ -267,10 +280,13 @@ class GarminConnectAuthenticationError(Exception):
 
 async def download_garmin_gpx(client, activity_id):
     try:
-        gpx_data = await client.download_activity(activity_id)
-        file_path = os.path.join(GPX_FOLDER, f"{activity_id}.gpx")
-        async with aiofiles.open(file_path, "wb") as fb:
-            await fb.write(gpx_data)
+        file_data = await client.download_activity(activity_id)
+        if client.file_type == "fit":
+            zipfile.ZipFile(BytesIO(file_data)).extractall(GPX_FOLDER)
+        else:
+            file_path = os.path.join(GPX_FOLDER, f"{activity_id}." + client.file_type)
+            async with aiofiles.open(file_path, "wb") as fb:
+                await fb.write(file_data)
     except:
         print(f"Failed to download activity {activity_id}: ")
         traceback.print_exc()
@@ -278,17 +294,16 @@ async def download_garmin_gpx(client, activity_id):
 
 
 async def get_activity_id_list(client, start=0):
-
     if client.sync_type == "all":
         activities = await client.get_activities(start, 100)
         if len(activities) > 0:
             ids = list(map(lambda a: str(a.get("activityId", "")), activities))
-            print(f"Syncing Activity IDs")
+            print(f"{len(activities)} Syncing Activity {len(ids)} IDs: {ids}")
             return ids + await get_activity_id_list(client, start + 100)
         else:
             return []
     else:
-        activities = await client.get_activities(start, 20)
+        activities = await client.get_activities(start, 1)
         if len(activities) > 0:
             ids = list(map(lambda a: str(a.get("activityId", "")), activities))
             print(f"Syncing Activity IDs")
@@ -349,6 +364,12 @@ if __name__ == "__main__":
             "open_water_swimming",
         ],
     )
+    parser.add_argument(
+        "--file-type",
+        dest="file_type",
+        help=".gpx, .tcx, .fit(zip)",
+        choices=["gpx", "tcx", "fit"],
+    )
     options = parser.parse_args()
     email = options.email or config("sync", "garmin", "email")
     password = options.password or config("sync", "garmin", "password")
@@ -363,7 +384,8 @@ if __name__ == "__main__":
         or config("sync", "garmin", "activity-types")
         or "running"
     )
-    logger.debug("sync_type, activity_types: ", sync_type, activity_types)
+    file_type = options.file_type or config("sync", "garmin", "file-type") or "gpx"
+    logger.debug(f"{sync_type}, {activity_types}")
     is_only_running = options.only_run
     if email == None or password == None:
         print("Missing argument nor valid configuration file")
@@ -375,7 +397,13 @@ if __name__ == "__main__":
 
     async def download_new_activities():
         client = Garmin(
-            email, password, auth_domain, is_only_running, sync_type, activity_types
+            email,
+            password,
+            auth_domain,
+            is_only_running,
+            file_type,
+            sync_type,
+            activity_types,
         )
         client.login()
 
@@ -384,11 +412,12 @@ if __name__ == "__main__":
         downloaded_ids = [
             i.split(".")[0] for i in os.listdir(GPX_FOLDER) if not i.startswith(".")
         ]
-        logger.debug("downloaded ids: ", downloaded_ids)
+        logger.debug(f"downloaded ids: {downloaded_ids}")
         activity_ids = await get_activity_id_list(client)
-        logger.debug("activity ids: ", downloaded_ids)
+        logger.debug(f"activity ids: {downloaded_ids}")
+        print(f"{len(activity_ids)} activities in total, {activity_ids}")
         to_generate_garmin_ids = list(set(activity_ids) - set(downloaded_ids))
-        logger.debug("new ids: ", to_generate_garmin_ids)
+        logger.debug(f"new ids: {to_generate_garmin_ids}")
         print(f"{len(to_generate_garmin_ids)} new activities to be downloaded")
 
         start_time = time.time()

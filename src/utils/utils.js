@@ -9,12 +9,15 @@ import {
   MAIN_COLOR,
   RIDE_COLOR,
   VIRTUAL_RIDE_COLOR,
-  HIKE_COLOR,
   SWIM_COLOR,
   ROWING_COLOR,
   ROAD_TRIP_COLOR,
   FLIGHT_COLOR,
-  RUN_COLOR
+  WALK_COLOR,
+  RUN_COLOR,
+  TRAIL_RUN_COLOR,
+  HIKE_COLOR,
+  CLIMB_COLOR
 } from './const';
 
 const titleForShow = (run) => {
@@ -148,6 +151,8 @@ const titleForRun = (run) => {
         return RUN_TITLES.FULL_MARATHON_RUN_TITLE;
       }
       return RUN_TITLES.RUN_TITLE;
+    case 'Walk':
+      return RUN_TITLES.WALK_TITLE;
     case 'Ride':
       return RUN_TITLES.RIDE_TITLE;
     case 'Indoor Ride':
@@ -169,15 +174,21 @@ const titleForRun = (run) => {
 
 const colorFromType = (workoutType) => {
   switch (workoutType) {
+    case 'Walk':
+      return WALK_COLOR;
     case 'Run':
       return RUN_COLOR;
+    case 'TrailRun':
+      return TRAIL_RUN_COLOR;
+    case 'Hike':
+      return HIKE_COLOR;
+    case 'Climb':
+      return CLIMB_COLOR;
     case 'Ride':
     case 'Indoor Ride':
       return RIDE_COLOR;
     case 'VirtualRide':
       return VIRTUAL_RIDE_COLOR;
-    case 'Hike':
-      return HIKE_COLOR;
     case 'Rowing':
       return ROWING_COLOR;
     case 'Swim':

@@ -5,6 +5,7 @@ sync:
     authentication_domain: CN #  Global (default) | CN (Mainland China)
     email: user@email.com
     password: yourpassword
+    file-type: gpx # gpx | tcx | fit
     sync-type: recent # all | recent
     activity-types: # walking | hiking | running | cycling, TODO: swimming, other
       - running

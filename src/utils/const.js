@@ -13,9 +13,9 @@ const MUNICIPALITY_CITIES_ARR = [
 // styling: set to `true` if you want dash-line route
 const USE_DASH_LINE = true;
 // styling: route line opacity: [0, 1]
-const LINE_OPACITY = 0.4;
+const LINE_OPACITY = 0.9;
 // styling: map height
-const MAP_HEIGHT = 600;
+const MAP_HEIGHT = 400;
 
 // IF you outside China please make sure IS_CHINESE = false
 const IS_CHINESE = true;
@@ -32,28 +32,33 @@ const CHINESE_LOCATION_INFO_MESSAGE_FIRST =
 const CHINESE_LOCATION_INFO_MESSAGE_SECOND = '不要停下来，不要停下探索的脚步';
 
 const INFO_MESSAGE = IS_CHINESE ? CHINESE_INFO_MESSAGE : ENGLISH_INFO_MESSAGE;
+const WALK_TITLE = IS_CHINESE ? '散步' : 'Walk';
+const RUN_TITLE = '跑步';
+//const RUN_TITLE = IS_CHINESE ? '跑步' : 'Run';
 const FULL_MARATHON_RUN_TITLE = IS_CHINESE ? '全程马拉松' : 'Full Marathon';
 const HALF_MARATHON_RUN_TITLE = IS_CHINESE ? '半程马拉松' : 'Half Marathon';
-const RUN_TITLE = IS_CHINESE ? '跑步' : 'Run';
-const SWIM_TITLE = IS_CHINESE ? '游泳' : 'Swim';
-
+const TRAIL_RUN_TITLE = IS_CHINESE ? '越野跑' : 'TrailRun';
+const HIKE_TITLE = IS_CHINESE ? '徒步' : 'Hike';
+const CLIMB_TITLE = IS_CHINESE ? '登山' : 'Climb';
 const RIDE_TITLE = IS_CHINESE ? '骑行' : 'Ride';
 const INDOOR_RIDE_TITLE = IS_CHINESE ? '室内骑行' : 'Indoor Ride';
-const HIKE_TITLE = IS_CHINESE ? '徒步' : 'Hike';
+const SWIM_TITLE = IS_CHINESE ? '游泳' : 'Swim';
 const ROWING_TITLE = IS_CHINESE ? '划船' : 'Rowing';
 const ROAD_TRIP_TITLE = IS_CHINESE ? '自驾' : 'RoadTrip';
 const FLIGHT_TITLE = IS_CHINESE ? '飞行' : 'Flight';
 
 const RUN_TITLES = {
+  WALK_TITLE,
+  RUN_TITLE,
   FULL_MARATHON_RUN_TITLE,
   HALF_MARATHON_RUN_TITLE,
-  RUN_TITLE,
-
+  TRAIL_RUN_TITLE,
+  HIKE_TITLE,
+  CLIMB_TITLE,
   RIDE_TITLE,
   INDOOR_RIDE_TITLE,
-  HIKE_TITLE,
-  ROWING_TITLE,
   SWIM_TITLE,
+  ROWING_TITLE,
   ROAD_TRIP_TITLE,
   FLIGHT_TITLE,
 };
@@ -82,15 +87,22 @@ const wpink = 'rgb(228,212,220)';
 const gold = 'rgb(242,190,69)';
 const purple = 'rgb(154,118,252)';
 const veryPeri = 'rgb(105,106,173)';//长春花蓝
+const blue = 'rgb(51,153,255)';
+const orangeSlight = 'rgb(255,204,153)';
+const orangeDark = 'rgb(255,128,0)';
+const favColor = 'rgb(255,0,255)';
 
 // If your map has an offset please change this line
 // issues #92 and #198
 export const NEED_FIX_MAP = false;
 export const MAIN_COLOR = green;
-export const RUN_COLOR = yellow;
-export const RIDE_COLOR = green;
+export const WALK_COLOR = '#dddddd'
+export const RUN_COLOR = orangeSlight;
+export const TRAIL_RUN_COLOR = purple;
+export const HIKE_COLOR = orangeDark;
+export const CLIMB_COLOR = favColor;
+export const RIDE_COLOR = '#87ceeb';
 export const VIRTUAL_RIDE_COLOR = veryPeri;
-export const HIKE_COLOR = pink;
 export const SWIM_COLOR = gold;
 export const ROWING_COLOR = cyan;
 export const ROAD_TRIP_COLOR = purple;
