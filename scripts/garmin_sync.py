@@ -278,7 +278,7 @@ class GarminConnectAuthenticationError(Exception):
         self.status = status
 
 
-async def download_garmin_activity(client, activity_id):
+async def save_garmin_activity(client, activity_id):
     try:
         file_data = await client.download_activity(activity_id)
         if client.file_type == "fit":
@@ -422,7 +422,7 @@ if __name__ == "__main__":
 
         start_time = time.time()
         await gather_with_concurrency(
-            10, [download_garmin_activity(client, id) for id in to_generate_garmin_ids]
+            10, [save_garmin_activity(client, id) for id in to_generate_garmin_ids]
         )
         print(f"Download finished. Elapsed {time.time()-start_time} seconds")
         make_activities_file_only(SQL_FILE, GPX_FOLDER, JSON_FILE)

@@ -96,8 +96,8 @@ const favColor = 'rgb(255,0,255)';
 // issues #92 and #198
 export const NEED_FIX_MAP = false;
 export const MAIN_COLOR = green;
-export const WALK_COLOR = '#dddddd'
-export const RUN_COLOR = orangeSlight;
+export const WALK_COLOR = orangeSlight;
+export const RUN_COLOR = '#aa00aa';
 export const TRAIL_RUN_COLOR = purple;
 export const HIKE_COLOR = orangeDark;
 export const CLIMB_COLOR = favColor;
